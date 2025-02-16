@@ -1,28 +1,44 @@
+/* *********************************************************************** *
+ * project: org.matsim.*
+ * PersonAgent.java
+ *                                                                         *
+ * *********************************************************************** *
+ *                                                                         *
+ * copyright       : (C) 2008 by the members listed in the COPYING,        *
+ *                   LICENSE and WARRANTY file.                            *
+ * email           : info at matsim dot org                                *
+ *                                                                         *
+ * *********************************************************************** *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *   See also COPYING, LICENSE and WARRANTY file                           *
+ *                                                                         *
+ * *********************************************************************** */
+
 package io.github.agentsoz.ees.matsim;
 
 /*
  * #%L
  * Emergency Evacuation Simulator
  * %%
- * Copyright (C) 2014 - 2025 EES code contributors.
+ * Copyright (C) 2014 - 2024 by its authors. See AUTHORS file.
  * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * #L%
  */
 
@@ -54,7 +70,8 @@ import org.matsim.vehicles.Vehicle;
 import org.matsim.withinday.utils.EditTrips;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.inject.Inject;
+
+import javax.inject.Inject;
 
 class EvacAgent implements MobsimDriverAgent, HasPerson, PlanAgent, HasModifiablePlan {
 
@@ -69,10 +86,10 @@ class EvacAgent implements MobsimDriverAgent, HasPerson, PlanAgent, HasModifiabl
 	private final Network network;
 	private final MobsimTimer simTimer;
 	private final EventsManager eventsManager;
-	
+
 	private boolean planWasModified = false ;
 	private double expectedLinkLeaveTime;
-	
+
 	EvacAgent(final Plan selectedPlan, final Netsim simulation, TripRouter tripRouter) {
 		TimeInterpretation timeInterpretation = TimeInterpretation.create(simulation.getScenario().getConfig());
 		this.tripRouter = tripRouter;
@@ -83,12 +100,14 @@ class EvacAgent implements MobsimDriverAgent, HasPerson, PlanAgent, HasModifiabl
 		this.network = simulation.getScenario().getNetwork() ;
 		this.simTimer = simulation.getSimTimer() ;
 		this.eventsManager = simulation.getEventsManager() ;
+		System.out.println("[DEBUG] EvacAgent created for person: " + getId());
 
 		// deliberately does NOT keep a back pointer to the whole Netsim; this should also be removed in the constructor call.
 	}
 
 	@Override
 	public final void endLegAndComputeNextState(double now) {
+		System.out.println("[DEBUG] Ending activity and computing next state for: " + getId());
 		basicAgentDelegate.endLegAndComputeNextState(now);
 	}
 
@@ -109,17 +128,17 @@ class EvacAgent implements MobsimDriverAgent, HasPerson, PlanAgent, HasModifiabl
 
 		//		final PlanElement nextPlanElement = basicAgentDelegate.getNextPlanElement();
 		// yyyyyy this seems to be getting the unmodified plan but I don't know why. kai, nov'17
-		
+
 		Plan plan = WithinDayAgentUtils.getModifiablePlan(this) ;
 		Integer index = WithinDayAgentUtils.getCurrentPlanElementIndex(this) ;
 		if ( index+1 < plan.getPlanElements().size() ) {
 			// (otherwise it will fail, but we leave this to the delegate)
-			
+
 			PlanElement nextPlanElement = plan.getPlanElements().get(index+1) ;
 			log.trace( "next plan element=" + nextPlanElement );
 			if ( nextPlanElement instanceof Leg ) {
-				if ( 
-						//planWasModified || 
+				if (
+					//planWasModified ||
 						((Leg)nextPlanElement).getRoute()==null ) {
 					log.trace("leg has no route; recomputing next trip") ;
 					Activity act = (Activity) basicAgentDelegate.getCurrentPlanElement() ;
@@ -130,7 +149,7 @@ class EvacAgent implements MobsimDriverAgent, HasPerson, PlanAgent, HasModifiabl
 						String mainMode = TripStructureUtils.identifyMainMode(trip.getTripElements()) ;
 						log.debug("identified main mode=" + mainMode ) ;
 						editTrips.replanFutureTrip(trip, this.getModifiablePlan(), mainMode, now ) ;
-						
+
 						Trip newTrip = TripStructureUtils.findTripStartingAtActivity(act, this.getModifiablePlan()) ;
 
 						// something in the following is a null pointer ... which is triggered even
@@ -142,7 +161,7 @@ class EvacAgent implements MobsimDriverAgent, HasPerson, PlanAgent, HasModifiabl
 //							log.trace( "newTrip:\t" + newTrip.toString() );
 //							log.trace("");
 //						}
-						
+
 					}
 				}
 			}
@@ -152,7 +171,31 @@ class EvacAgent implements MobsimDriverAgent, HasPerson, PlanAgent, HasModifiabl
 
 	@Override
 	public final Id<Vehicle> getPlannedVehicleId() {
-		return basicAgentDelegate.getPlannedVehicleId();
+		Id<Vehicle> vehicleId = basicAgentDelegate.getPlannedVehicleId();
+		String mode = getMode();
+
+		System.out.println("[DEBUG] EvacAgent.getPlannedVehicleId() - Agent: " + getId() +
+				" - Retrieved Vehicle ID: " + vehicleId + " - Mode: " + mode);
+
+		// Ensure we only correct for non-car modes
+		if (vehicleId.toString().equals(getId().toString())) {
+			System.out.println("[WARNING] Vehicle ID defaulted to Agent ID. Checking for missing suffix...");
+
+			// Debugging: Ensure getMode() is returning the correct mode
+			if (mode == null) {
+				System.out.println("[ERROR] getMode() returned NULL for Agent: " + getId());
+			} else if (mode.equals("car")) {
+				System.out.println("[DEBUG] Mode is car. No suffix needed.");
+			} else {
+				System.out.println("[DEBUG] Mode is NOT car. Attempting to restore suffix...");
+				Id<Vehicle> correctedVehicleId = Id.create(getId() + "_" + mode, Vehicle.class);
+				System.out.println("[FIX] Restoring correct vehicle ID: " + correctedVehicleId);
+				return correctedVehicleId;
+			}
+		}
+
+		// If mode is "car" or there is no issue, return the original ID
+		return vehicleId;
 	}
 
 	@Override
@@ -172,8 +215,30 @@ class EvacAgent implements MobsimDriverAgent, HasPerson, PlanAgent, HasModifiabl
 
 	@Override
 	public String toString() {
-		return basicAgentDelegate.toString();
+		StringBuilder builder = new StringBuilder();
+		builder.append("EvacAgent{");
+
+		if (basicAgentDelegate != null) {
+			Id<Person> personId = basicAgentDelegate.getId();
+			builder.append("personId=").append(personId == null ? "null" : personId.toString());
+
+			State agentState = basicAgentDelegate.getState();
+			builder.append(", state=").append(agentState == null ? "null" : agentState.toString());
+
+			if (basicAgentDelegate.getVehicle() != null) {
+				Id<Vehicle> vehicleId = basicAgentDelegate.getVehicle().getId();
+				builder.append(", vehicleId=").append(vehicleId == null ? "null" : vehicleId.toString());
+			} else {
+				builder.append(", vehicleId=null");
+			}
+		} else {
+			builder.append("basicAgentDelegate=null");
+		}
+
+		builder.append("}");
+		return builder.toString();
 	}
+
 
 	@Override
 	public final PlanElement getCurrentPlanElement() {
@@ -201,12 +266,14 @@ class EvacAgent implements MobsimDriverAgent, HasPerson, PlanAgent, HasModifiabl
 	}
 
 	@Override
-	public final MobsimVehicle getVehicle() {
+	public MobsimVehicle getVehicle() {
+		System.out.println("[DEBUG] Retrieving vehicle for " + getId());
 		return basicAgentDelegate.getVehicle();
 	}
 
 	@Override
-	public final void setVehicle(MobsimVehicle vehicle) {
+	public void setVehicle(MobsimVehicle vehicle) {
+		System.out.println("[DEBUG] Setting vehicle " + (vehicle != null ? vehicle.getId() : "null") + " for agent " + getId());
 		basicAgentDelegate.setVehicle(vehicle);
 	}
 
@@ -245,14 +312,14 @@ class EvacAgent implements MobsimDriverAgent, HasPerson, PlanAgent, HasModifiabl
 	@Override
 	public final boolean isWantingToArriveOnCurrentLink() {
 		boolean retVal = driverAgentDelegate.isWantingToArriveOnCurrentLink();
-		
+
 		if (retVal==false) {
 			Link nextLink = this.network.getLinks().get( this.chooseNextLinkId() ) ;
 			final double now = this.simTimer.getTimeOfDay();
 			if (nextLink.getFreespeed(now) < 0.1) {
-			    NextLinkBlockedEvent nextLinkBlockedEvent = new NextLinkBlockedEvent(
-                        now, this.getVehicle().getId(), this.getId(), this.getCurrentLinkId(),
-                        nextLink.getId() );
+				NextLinkBlockedEvent nextLinkBlockedEvent = new NextLinkBlockedEvent(
+						now, this.getVehicle().getId(), this.getId(), this.getCurrentLinkId(),
+						nextLink.getId() );
 				log.debug(nextLinkBlockedEvent.toString());
 				this.eventsManager.processEvent( nextLinkBlockedEvent );
 				// yyyy this event is now generated both here and in the intersection.  In general,
@@ -260,7 +327,7 @@ class EvacAgent implements MobsimDriverAgent, HasPerson, PlanAgent, HasModifiabl
 				// closure may happen between here and arriving at the node ...  kai, dec'17
 			}
 		}
-		
+
 		return retVal ;
 	}
 	@Override public final Plan getModifiablePlan() {
@@ -292,7 +359,7 @@ class EvacAgent implements MobsimDriverAgent, HasPerson, PlanAgent, HasModifiabl
 	public int getCurrentLinkIndex() {
 		return this.basicAgentDelegate.getCurrentLinkIndex() ;
 	}
-	
+
 	public static class Factory implements AgentFactory {
 		@Inject Netsim simulation;
 		@Inject TripRouter tripRouter ;

@@ -4,25 +4,21 @@ package io.github.agentsoz.ees;
  * #%L
  * Emergency Evacuation Simulator
  * %%
- * Copyright (C) 2014 - 2025 EES code contributors.
+ * Copyright (C) 2014 - 2025 by its authors. See AUTHORS file.
  * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
  * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * #L%
  */
 
@@ -34,6 +30,7 @@ import io.github.agentsoz.bdiabm.v2.AgentDataContainer;
 import io.github.agentsoz.dataInterface.DataClient;
 import io.github.agentsoz.dataInterface.DataServer;
 import io.github.agentsoz.ees.agents.archetype.ArchetypeAgent;
+import io.github.agentsoz.ees.agents.archetype.ArchetypeAgentW1;
 import io.github.agentsoz.ees.util.Utils;
 import io.github.agentsoz.jill.lang.Agent;
 import io.github.agentsoz.util.Location;
@@ -531,6 +528,32 @@ public class JillBDIModel extends JillModel implements DataClient {
 				Agent thisAgent = (Agent)getAgent(Integer.valueOf(id));
 				if (thisAgent instanceof ArchetypeAgent) {
 					ArchetypeAgent agent = (ArchetypeAgent) getAgent(Integer.valueOf(id));
+					String type = thisAgent.getClass().getSimpleName();
+					Location[] fromTo = agent.getCurrentLocation();
+					String linkId = fromTo[0].getName().split(":")[0];
+					String status = agent.getCurrentStatus();
+					String receivedMessages = agent.getReceivedMessages();
+					agentsMetrics.put(id, new AgentMetricData(id, type, status, linkId, fromTo[0], fromTo[1], receivedMessages));
+
+					String statusType = status.split(":")[0];
+					LinkMetricData linkMetricData = linksMetrics.containsKey(linkId) ?
+							linksMetrics.get(linkId) :
+							new LinkMetricData(linkId, fromTo[0], fromTo[1]);
+					switch (statusType) {
+						case "at":
+							linkMetricData.setAgentsInActivities(linkMetricData.getAgentsInActivities()+1);
+							break;
+						case "to":
+							linkMetricData.setAgentsDriving(linkMetricData.getAgentsDriving()+1);
+							break;
+						default:
+							// ignore the rest
+							break;
+					}
+					linksMetrics.put(linkId, linkMetricData);
+				}
+				else if (thisAgent instanceof ArchetypeAgentW1) {
+					ArchetypeAgentW1 agent = (ArchetypeAgentW1) getAgent(Integer.valueOf(id));
 					String type = thisAgent.getClass().getSimpleName();
 					Location[] fromTo = agent.getCurrentLocation();
 					String linkId = fromTo[0].getName().split(":")[0];

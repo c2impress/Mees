@@ -4,25 +4,21 @@ package io.github.agentsoz.ees.matsim;
  * #%L
  * Emergency Evacuation Simulator
  * %%
- * Copyright (C) 2014 - 2025 EES code contributors.
+ * Copyright (C) 2014 - 2025 by its authors. See AUTHORS file.
  * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
  * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * #L%
  */
 
@@ -98,10 +94,13 @@ public class EvacAgentTracker implements
 	public void handleEvent(LinkEnterEvent event) {
 		Link link = network.getLinks().get( event.getLinkId() ) ;
 		Id<Vehicle> vehicleId = event.getVehicleId();
+
+
 		// Retrieve vehicle data if it exists, else start afresh
 		VehicleTrackingData vehicleData = linkEnterEventsMap.containsKey(vehicleId) ?
 				linkEnterEventsMap.get(vehicleId) : new VehicleTrackingData(vehicleId, event.getTime());
-		// Track estimated time to end of this link
+
+
 		vehicleData.setEstArrivalTimeAtCurrentLinkEnd(vehicleData.getEstArrivalTimeAtCurrentLinkEnd()
 				+ Math.ceil(link.getLength() / link.getFreespeed(event.getTime())));
 		// Also record the time we entered this link
@@ -117,6 +116,8 @@ public class EvacAgentTracker implements
 		// in congestion until it eventually leaves the link; dsingh 31/01/18
 		Link link = network.getLinks().get( event.getLinkId() ) ;
 		Id<Vehicle> vehicleId = event.getVehicleId();
+
+		// Track estimated time to end of this link
 		// Tracking should always start at the start of some link, so if the agent
 		// was initialised on a link then don't count that
 		if (linkEnterEventsMap.containsKey(vehicleId)) {
@@ -124,10 +125,12 @@ public class EvacAgentTracker implements
 			VehicleTrackingData vehicleData = linkEnterEventsMap.get(vehicleId);
 			vehicleData.setDistanceSinceStart(vehicleData.getDistanceSinceStart() + link.getLength());
 			vehicleData.setTimeSinceStart(event.getTime() - vehicleData.getTrackingStartTime());
+
 			// If it has been long enough since the BDI agent last evaluated if it is in congestion
 			if (vehicleData.getTimeSinceStart() > evacConfig.getCongestionEvaluationInterval()) {
 				// Calculate delay against the estimated travel time for this interval (could be over several links)
 				double totalDelayInThisInterval = event.getTime() - vehicleData.getEstArrivalTimeAtCurrentLinkEnd();
+
 				// If the delay is greater than the agent's tolerance threshold, then the agent will
 				// now realise (or "believe" in the BDI sense) that it is in congestion
 				if(totalDelayInThisInterval > evacConfig.getCongestionEvaluationInterval() * evacConfig.getCongestionToleranceThreshold()) {
@@ -149,7 +152,6 @@ public class EvacAgentTracker implements
 				double expectedTimeOnLink = Math.ceil(link.getLength() / link.getFreespeed(event.getTime()));
 				double actualTimeOnLink = event.getTime() - vehicleData.getLastLinkEnterTime();
 				double relativeSpeed = expectedTimeOnLink/actualTimeOnLink;
-
 				// Below we amplify the relative speed difference (squared)
 				// to make the colours more sensitive to drops in speed
 				//relativeSpeed = Math.pow(relativeSpeed,2);
@@ -186,18 +188,36 @@ public class EvacAgentTracker implements
 		private double lastLinkEnterTime;
 
 		public VehicleTrackingData(Id<Vehicle> vehicleIid, double trackingStartTime) {
-			this.vehicleIid = vehicleIid;
+			System.out.println("Creating VehicleTrackingData for vehicleId: " + vehicleIid + " with tracking start time: " + trackingStartTime);
+			this.vehicleIid = vehicleIid; // Initial assignment without modification
 			this.trackingStartTime = trackingStartTime;
 			this.estArrivalTimeAtCurrentLinkEnd = trackingStartTime;
-			lastLinkEnterTime = trackingStartTime;
+			this.lastLinkEnterTime = trackingStartTime;
+			System.out.println("VehicleTrackingData initialized. Estimated arrival time at current link end and last link enter time set to: " + trackingStartTime);
 		}
 
+		// Getter for vehicleIid
 		public Id<Vehicle> getVehicleIid() {
+			System.out.println("Getting vehicleId: " + vehicleIid);
 			return vehicleIid;
 		}
 
+
 		public void setVehicleIid(Id<Vehicle> vehicleIid) {
-			this.vehicleIid = vehicleIid;
+			// Convert the incoming vehicleIid to a String for manipulation
+			String vehicleIdStr = vehicleIid.toString();
+
+			// Modify the vehicle ID, for example from "0_sOne" to "0"
+			String modifiedVehicleIdStr = vehicleIdStr.replaceAll("_sOne", "");
+
+			// Create a new Id<Vehicle> with the modified string
+			Id<Vehicle> modifiedVehicleId = Id.create(modifiedVehicleIdStr, Vehicle.class);
+
+			// Log the change for debugging purposes
+			System.out.println("Modifying vehicleId from: " + this.vehicleIid + " to: " + modifiedVehicleId);
+
+			// Finally, update this.vehicleIid with the modified ID
+			this.vehicleIid = modifiedVehicleId;
 		}
 
 		public double getTrackingStartTime() {

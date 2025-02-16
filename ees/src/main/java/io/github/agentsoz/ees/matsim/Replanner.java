@@ -10,7 +10,7 @@ import org.matsim.core.mobsim.framework.MobsimAgent;
 import org.matsim.core.mobsim.qsim.QSim;
 import org.matsim.core.mobsim.qsim.agents.WithinDayAgentUtils;
 import org.matsim.core.network.NetworkChangeEvent;
-import org.matsim.core.router.AStarLandmarksFactory;
+import org.matsim.core.router.FastAStarLandmarksFactory;
 import org.matsim.core.router.TripRouter;
 import org.matsim.core.router.util.*;
 import org.matsim.core.utils.timing.TimeInterpretation;
@@ -27,25 +27,21 @@ import java.util.Map;
  * #%L
  * Emergency Evacuation Simulator
  * %%
- * Copyright (C) 2014 - 2025 EES code contributors.
+ * Copyright (C) 2014 - 2025 by its authors. See AUTHORS file.
  * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
  * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * #L%
  */
 
@@ -66,8 +62,8 @@ public final class Replanner {
 		this.travelTimes = travelTimes ;
 		{
 			TravelTime travelTime = TravelTimeUtils.createFreeSpeedTravelTime();
-			TravelDisutility travelDisutility = TravelDisutilityUtils.createFreespeedTravelTimeAndDisutility(scenario.getConfig().scoring());
-			LeastCostPathCalculator pathCalculator = new AStarLandmarksFactory(1).createPathCalculator(scenario.getNetwork(), travelDisutility, travelTime);
+			TravelDisutility travelDisutility = TravelDisutilityUtils.createFreespeedTravelTimeAndDisutility(scenario.getConfig().planCalcScore());
+			LeastCostPathCalculator pathCalculator = new FastAStarLandmarksFactory(1).createPathCalculator(scenario.getNetwork(), travelDisutility, travelTime);
 			this.editRoutes = new EditRoutes(scenario.getNetwork(), pathCalculator, scenario.getPopulation().getFactory());
 		}
 		this.editTrips = new EditTrips(tripRouter, qSim2.getScenario(), null, TimeInterpretation.create(scenario.getConfig())) ;
@@ -90,6 +86,20 @@ public final class Replanner {
 	public EditRoutes editRoutes(Constants.EvacRoutingMode evacRoutingMode) {
 		switch( evacRoutingMode ) {
 			case carFreespeed:
+				return editRoutes ;
+			case sOneFree:
+				return editRoutes ;
+			case sTwoFree:
+				return editRoutes ;
+			case sThreeFree:
+				return editRoutes ;
+			case sFourFree:
+				return editRoutes ;
+			case sFiveFree:
+				return editRoutes ;
+			case sSixFree:
+				return editRoutes ;
+			case sSevenFree:
 				return editRoutes ;
 			default:
 				throw new RuntimeException("not implemented.  See how editRoutes is constructed.  " +

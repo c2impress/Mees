@@ -4,31 +4,26 @@ package io.github.agentsoz.ees.matsim;
  * #%L
  * Emergency Evacuation Simulator
  * %%
- * Copyright (C) 2014 - 2025 EES code contributors.
+ * Copyright (C) 2014 - 2025 by its authors. See AUTHORS file.
  * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
  * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * #L%
  */
 
 import com.google.common.collect.ObjectArrays;
 import com.google.gson.Gson;
-import com.google.inject.Singleton;
 import io.github.agentsoz.bdiabm.ABMServerInterface;
 import io.github.agentsoz.bdiabm.v3.QueryPerceptInterface;
 import io.github.agentsoz.bdiabm.data.ActionContent;
@@ -76,6 +71,7 @@ import org.matsim.withinday.trafficmonitoring.WithinDayTravelTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Singleton;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -463,6 +459,12 @@ public final class MATSimEvacModel implements ABMServerInterface, QueryPerceptIn
                     Constants.DRIVETO, new EvacDrivetoActionHandlerV2(matsimModel));
             paAgent.getActionHandler().registerBDIAction(
                     Constants.REPLAN_CURRENT_DRIVETO, new ReplanDriveToDefaultActionHandlerV2(matsimModel));
+
+            // replace the default action handlers with evacuation specific ones
+            paAgent.getActionHandler().registerBDIAction(
+                    Constants.WALKTO1, new EvacWalkto1ActionHandlerV2(matsimModel));
+            paAgent.getActionHandler().registerBDIAction(
+                    Constants.REPLAN_CURRENT_WALKTO1, new ReplanWalkTo1DefaultActionHandlerV2(matsimModel));
         }
 
     }
@@ -486,6 +488,20 @@ public final class MATSimEvacModel implements ABMServerInterface, QueryPerceptIn
                 setupEmergencyVehicleRouting();
                 setupCarGlobalInformationRouting();
                 setupCarFreespeedRouting();
+                setupsOneRouting();
+                setupsTwoRouting();
+                setupsThreeRouting();
+                setupsFourRouting();
+                setupsFiveRouting();
+                setupsSixRouting();
+                setupsSevenRouting();
+                setupsOneGlobal();
+                setupsTwoGlobal();
+                setupsThreeGlobal();
+                setupsFourGlobal();
+                setupsFiveGlobal();
+                setupsSixGlobal();
+                setupsSevenGlobal();
             }
 
             private void bindEvacuationRoutingAlgorithm() {
@@ -493,7 +509,137 @@ public final class MATSimEvacModel implements ABMServerInterface, QueryPerceptIn
                     this.bind(LeastCostPathCalculatorFactory.class).to(ExampleRoutingAlgorithmFactory.class);
                 }
             }
+            public class CustomTransportMode {
+                public static final String sOne = "sOne";
+                public static final String sTwo = "sTwo";
+                public static final String sThree = "sThree";
+                public static final String sFour = "sFour";
+                public static final String sFive = "sFive";
+                public static final String sSix = "sSix";
+                public static final String sSeven = "sSeven";
+                public static final String car = "car";
 
+            }
+            private void setupsOneRouting() {
+                // memorize the routing mode:
+                String routingMode = Constants.EvacRoutingMode.sOneFree.name() ;
+
+
+                addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(CustomTransportMode.sOne,routingMode)) ;
+                // (above line means that when "routingMode" is requested, a "network" routing will be provided, and the route
+                // will be executed as "car" in the mobsim).
+
+                addTravelTimeBinding(routingMode).to(FreeSpeedTravelTime.class);
+                // (this defines which travel time this routing mode should use.  Here: free speed))
+
+                TravelDisutilityFactory disutilityFactory = new EvacTravelDisutility.Factory(penaltyFactorsOfLinks);
+                addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
+                // (this defines which travel disutility this routing mode should use.  Here: a specific evac travel disutility, which takes
+                // penalty factors as input.  The penalty factors are filled from fire data; if there is no fire data, they remain empty)
+            }
+
+            private void setupsTwoRouting() {
+                // memorize the routing mode:
+                String routingMode = Constants.EvacRoutingMode.sTwoFree.name() ;
+
+                addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(CustomTransportMode.sTwo,routingMode)) ;
+                // (above line means that when "routingMode" is requested, a "network" routing will be provided, and the route
+                // will be executed as "car" in the mobsim).
+
+                addTravelTimeBinding(routingMode).to(FreeSpeedTravelTime.class);
+                // (this defines which travel time this routing mode should use.  Here: free speed))
+
+                TravelDisutilityFactory disutilityFactory = new EvacTravelDisutility.Factory(penaltyFactorsOfLinks);
+                addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
+                // (this defines which travel disutility this routing mode should use.  Here: a specific evac travel disutility, which takes
+                // penalty factors as input.  The penalty factors are filled from fire data; if there is no fire data, they remain empty)
+            }
+
+            private void setupsThreeRouting() {
+                // memorize the routing mode:
+                String routingMode = Constants.EvacRoutingMode.sThreeFree.name() ;
+
+                addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(CustomTransportMode.sThree,routingMode)) ;
+                // (above line means that when "routingMode" is requested, a "network" routing will be provided, and the route
+                // will be executed as "car" in the mobsim).
+
+                addTravelTimeBinding(routingMode).to(FreeSpeedTravelTime.class);
+                // (this defines which travel time this routing mode should use.  Here: free speed))
+
+                TravelDisutilityFactory disutilityFactory = new EvacTravelDisutility.Factory(penaltyFactorsOfLinks);
+                addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
+                // (this defines which travel disutility this routing mode should use.  Here: a specific evac travel disutility, which takes
+                // penalty factors as input.  The penalty factors are filled from fire data; if there is no fire data, they remain empty)
+            }
+
+            private void setupsFourRouting() {
+                // memorize the routing mode:
+                String routingMode = Constants.EvacRoutingMode.sFourFree.name() ;
+
+                addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(CustomTransportMode.sFour,routingMode)) ;
+                // (above line means that when "routingMode" is requested, a "network" routing will be provided, and the route
+                // will be executed as "car" in the mobsim).
+
+                addTravelTimeBinding(routingMode).to(FreeSpeedTravelTime.class);
+                // (this defines which travel time this routing mode should use.  Here: free speed))
+
+                TravelDisutilityFactory disutilityFactory = new EvacTravelDisutility.Factory(penaltyFactorsOfLinks);
+                addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
+                // (this defines which travel disutility this routing mode should use.  Here: a specific evac travel disutility, which takes
+                // penalty factors as input.  The penalty factors are filled from fire data; if there is no fire data, they remain empty)
+            }
+
+            private void setupsFiveRouting() {
+                // memorize the routing mode:
+                String routingMode = Constants.EvacRoutingMode.sFiveFree.name() ;
+
+                addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(CustomTransportMode.sFive,routingMode)) ;
+                // (above line means that when "routingMode" is requested, a "network" routing will be provided, and the route
+                // will be executed as "car" in the mobsim).
+
+                addTravelTimeBinding(routingMode).to(FreeSpeedTravelTime.class);
+                // (this defines which travel time this routing mode should use.  Here: free speed))
+
+                TravelDisutilityFactory disutilityFactory = new EvacTravelDisutility.Factory(penaltyFactorsOfLinks);
+                addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
+                // (this defines which travel disutility this routing mode should use.  Here: a specific evac travel disutility, which takes
+                // penalty factors as input.  The penalty factors are filled from fire data; if there is no fire data, they remain empty)
+            }
+
+
+            private void setupsSixRouting() {
+                // memorize the routing mode:
+                String routingMode = Constants.EvacRoutingMode.sSixFree.name() ;
+
+                addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(CustomTransportMode.sSix,routingMode)) ;
+                // (above line means that when "routingMode" is requested, a "network" routing will be provided, and the route
+                // will be executed as "car" in the mobsim).
+
+                addTravelTimeBinding(routingMode).to(FreeSpeedTravelTime.class);
+                // (this defines which travel time this routing mode should use.  Here: free speed))
+
+                TravelDisutilityFactory disutilityFactory = new EvacTravelDisutility.Factory(penaltyFactorsOfLinks);
+                addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
+                // (this defines which travel disutility this routing mode should use.  Here: a specific evac travel disutility, which takes
+                // penalty factors as input.  The penalty factors are filled from fire data; if there is no fire data, they remain empty)
+            }
+
+            private void setupsSevenRouting() {
+                // memorize the routing mode:
+                String routingMode = Constants.EvacRoutingMode.sSevenFree.name() ;
+
+                addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(CustomTransportMode.sSeven,routingMode)) ;
+                // (above line means that when "routingMode" is requested, a "network" routing will be provided, and the route
+                // will be executed as "car" in the mobsim).
+
+                addTravelTimeBinding(routingMode).to(FreeSpeedTravelTime.class);
+                // (this defines which travel time this routing mode should use.  Here: free speed))
+
+                TravelDisutilityFactory disutilityFactory = new EvacTravelDisutility.Factory(penaltyFactorsOfLinks);
+                addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
+                // (this defines which travel disutility this routing mode should use.  Here: a specific evac travel disutility, which takes
+                // penalty factors as input.  The penalty factors are filled from fire data; if there is no fire data, they remain empty)
+            }
             private void setupCarFreespeedRouting() {
                 // memorize the routing mode:
                 String routingMode = Constants.EvacRoutingMode.carFreespeed.name() ;
@@ -528,6 +674,128 @@ public final class MATSimEvacModel implements ABMServerInterface, QueryPerceptIn
                 addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
             }
 
+
+            private void setupsOneGlobal() {
+                final String routingMode = Constants.EvacRoutingMode.sOneGlobal.name();
+
+                addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(CustomTransportMode.sOne, routingMode)) ;
+
+                // congested travel time:
+                bind(WithinDayTravelTime.class).in(Singleton.class);
+                addEventHandlerBinding().to(WithinDayTravelTime.class);
+                addMobsimListenerBinding().to(WithinDayTravelTime.class);
+                addTravelTimeBinding(routingMode).to(WithinDayTravelTime.class) ;
+
+                // travel disutility includes the fire penalty. If no data arrives, it makes no difference.
+                TravelDisutilityFactory disutilityFactory = new EvacTravelDisutility.Factory(penaltyFactorsOfLinks);
+                // (yyyyyy the now following cases are just there because of the different tests.  Solve by config,
+                addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
+            }
+
+
+            private void setupsTwoGlobal() {
+                final String routingMode = Constants.EvacRoutingMode.sTwoGlobal.name();
+
+                addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(CustomTransportMode.sTwo, routingMode)) ;
+
+                // congested travel time:
+                bind(WithinDayTravelTime.class).in(Singleton.class);
+                addEventHandlerBinding().to(WithinDayTravelTime.class);
+                addMobsimListenerBinding().to(WithinDayTravelTime.class);
+                addTravelTimeBinding(routingMode).to(WithinDayTravelTime.class) ;
+
+                // travel disutility includes the fire penalty. If no data arrives, it makes no difference.
+                TravelDisutilityFactory disutilityFactory = new EvacTravelDisutility.Factory(penaltyFactorsOfLinks);
+                // (yyyyyy the now following cases are just there because of the different tests.  Solve by config,
+                addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
+            }
+
+            private void setupsThreeGlobal() {
+                final String routingMode = Constants.EvacRoutingMode.sThreeGlobal.name();
+
+                addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(CustomTransportMode.sThree, routingMode)) ;
+
+                // congested travel time:
+                bind(WithinDayTravelTime.class).in(Singleton.class);
+                addEventHandlerBinding().to(WithinDayTravelTime.class);
+                addMobsimListenerBinding().to(WithinDayTravelTime.class);
+                addTravelTimeBinding(routingMode).to(WithinDayTravelTime.class) ;
+
+                // travel disutility includes the fire penalty. If no data arrives, it makes no difference.
+                TravelDisutilityFactory disutilityFactory = new EvacTravelDisutility.Factory(penaltyFactorsOfLinks);
+                // (yyyyyy the now following cases are just there because of the different tests.  Solve by config,
+                addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
+            }
+
+            private void setupsFourGlobal() {
+                final String routingMode = Constants.EvacRoutingMode.sFourGlobal.name();
+
+                addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(CustomTransportMode.sFour, routingMode)) ;
+
+                // congested travel time:
+                bind(WithinDayTravelTime.class).in(Singleton.class);
+                addEventHandlerBinding().to(WithinDayTravelTime.class);
+                addMobsimListenerBinding().to(WithinDayTravelTime.class);
+                addTravelTimeBinding(routingMode).to(WithinDayTravelTime.class) ;
+
+                // travel disutility includes the fire penalty. If no data arrives, it makes no difference.
+                TravelDisutilityFactory disutilityFactory = new EvacTravelDisutility.Factory(penaltyFactorsOfLinks);
+                // (yyyyyy the now following cases are just there because of the different tests.  Solve by config,
+                addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
+            }
+
+            private void setupsFiveGlobal() {
+                final String routingMode = Constants.EvacRoutingMode.sFiveGlobal.name();
+
+                addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(CustomTransportMode.sFive, routingMode)) ;
+
+                // congested travel time:
+                bind(WithinDayTravelTime.class).in(Singleton.class);
+                addEventHandlerBinding().to(WithinDayTravelTime.class);
+                addMobsimListenerBinding().to(WithinDayTravelTime.class);
+                addTravelTimeBinding(routingMode).to(WithinDayTravelTime.class) ;
+
+                // travel disutility includes the fire penalty. If no data arrives, it makes no difference.
+                TravelDisutilityFactory disutilityFactory = new EvacTravelDisutility.Factory(penaltyFactorsOfLinks);
+                // (yyyyyy the now following cases are just there because of the different tests.  Solve by config,
+                addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
+            }
+
+
+            private void setupsSixGlobal() {
+                final String routingMode = Constants.EvacRoutingMode.sSixGlobal.name();
+
+                addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(CustomTransportMode.sSix, routingMode)) ;
+
+                // congested travel time:
+                bind(WithinDayTravelTime.class).in(Singleton.class);
+                addEventHandlerBinding().to(WithinDayTravelTime.class);
+                addMobsimListenerBinding().to(WithinDayTravelTime.class);
+                addTravelTimeBinding(routingMode).to(WithinDayTravelTime.class) ;
+
+                // travel disutility includes the fire penalty. If no data arrives, it makes no difference.
+                TravelDisutilityFactory disutilityFactory = new EvacTravelDisutility.Factory(penaltyFactorsOfLinks);
+                // (yyyyyy the now following cases are just there because of the different tests.  Solve by config,
+                addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
+            }
+
+
+            private void setupsSevenGlobal() {
+                final String routingMode = Constants.EvacRoutingMode.sSevenGlobal.name();
+
+                addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(CustomTransportMode.sSeven, routingMode)) ;
+
+                // congested travel time:
+                bind(WithinDayTravelTime.class).in(Singleton.class);
+                addEventHandlerBinding().to(WithinDayTravelTime.class);
+                addMobsimListenerBinding().to(WithinDayTravelTime.class);
+                addTravelTimeBinding(routingMode).to(WithinDayTravelTime.class) ;
+
+                // travel disutility includes the fire penalty. If no data arrives, it makes no difference.
+                TravelDisutilityFactory disutilityFactory = new EvacTravelDisutility.Factory(penaltyFactorsOfLinks);
+                // (yyyyyy the now following cases are just there because of the different tests.  Solve by config,
+                addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
+            }
             private void setupEmergencyVehicleRouting() {
                 final String routingMode = Constants.EvacRoutingMode.emergencyVehicle.name();
 

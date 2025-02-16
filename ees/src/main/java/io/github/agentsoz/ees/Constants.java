@@ -4,25 +4,21 @@ package io.github.agentsoz.ees;
  * #%L
  * Emergency Evacuation Simulator
  * %%
- * Copyright (C) 2014 - 2025 EES code contributors.
+ * Copyright (C) 2014 - 2025 by its authors. See AUTHORS file.
  * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
  * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * #L%
  */
 
@@ -30,9 +26,41 @@ package io.github.agentsoz.ees;
 public class Constants {
     // Actions
     public static final String DRIVETO = io.github.agentsoz.util.ActionList.DRIVETO;
-    public static final String REPLAN_CURRENT_DRIVETO = io.github.agentsoz.util.ActionList.REPLAN_CURRENT_DRIVETO;
-    public static final String PERCEIVE = io.github.agentsoz.util.ActionList.PERCEIVE;
+    public static final String WALKTO1 = io.github.agentsoz.util.ActionList.WALKTO1;
+    public static final String WALKTO2 = io.github.agentsoz.util.ActionList.WALKTO2;
+    public static final String WALKTO3 = io.github.agentsoz.util.ActionList.WALKTO3;
+    public static final String WALKTO4 = io.github.agentsoz.util.ActionList.WALKTO4;
 
+    public static final String WALKTO5 = io.github.agentsoz.util.ActionList.WALKTO5;
+
+    public static final String WALKTO6 = io.github.agentsoz.util.ActionList.WALKTO6;
+
+    public static final String WALKTO7 = io.github.agentsoz.util.ActionList.WALKTO7;
+
+    public static final String REPLAN_CURRENT_DRIVETO = io.github.agentsoz.util.ActionList.REPLAN_CURRENT_DRIVETO;
+    public static final String REPLAN_CURRENT_WALKTO1 = io.github.agentsoz.util.ActionList.REPLAN_CURRENT_WALKTO1;
+    public static final String REPLAN_CURRENT_WALKTO2 = io.github.agentsoz.util.ActionList.REPLAN_CURRENT_WALKTO2;
+
+    public static final String REPLAN_CURRENT_WALKTO3 = io.github.agentsoz.util.ActionList.REPLAN_CURRENT_WALKTO3;
+
+    public static final String REPLAN_CURRENT_WALKTO4 = io.github.agentsoz.util.ActionList.REPLAN_CURRENT_WALKTO4;
+
+    public static final String REPLAN_CURRENT_WALKTO5 = io.github.agentsoz.util.ActionList.REPLAN_CURRENT_WALKTO5;
+
+    public static final String REPLAN_CURRENT_WALKTO6 = io.github.agentsoz.util.ActionList.REPLAN_CURRENT_WALKTO6;
+    public static final String REPLAN_CURRENT_WALKTO7 = io.github.agentsoz.util.ActionList.REPLAN_CURRENT_WALKTO7;
+    public static final String PERCEIVE = io.github.agentsoz.util.ActionList.PERCEIVE;
+    public static final String PERCEIVE_WALKTO1 = io.github.agentsoz.util.ActionList.PERCEIVE_WALKTO1;
+
+    public static final String PERCEIVE_WALKTO2 = io.github.agentsoz.util.ActionList.PERCEIVE_WALKTO2;
+
+    public static final String PERCEIVE_WALKTO3 = io.github.agentsoz.util.ActionList.PERCEIVE_WALKTO3;
+
+    public static final String PERCEIVE_WALKTO4 = io.github.agentsoz.util.ActionList.PERCEIVE_WALKTO4;
+
+    public static final String PERCEIVE_WALKTO5 = io.github.agentsoz.util.ActionList.PERCEIVE_WALKTO5;
+    public static final String PERCEIVE_WALKTO6 = io.github.agentsoz.util.ActionList.PERCEIVE_WALKTO6;
+    public static final String PERCEIVE_WALKTO7 = io.github.agentsoz.util.ActionList.PERCEIVE_WALKTO7;
     // Percepts
     public static final String ARRIVED = io.github.agentsoz.util.PerceptList.ARRIVED;
     public static final String ACTIVITY_STARTED = io.github.agentsoz.util.PerceptList.ACTIVITY_STARTED;
@@ -81,7 +109,7 @@ public class Constants {
         UnknownPlace,
     }
 
-    public enum EvacRoutingMode {carFreespeed, carGlobalInformation, emergencyVehicle}
+    public enum EvacRoutingMode {carFreespeed, carGlobalInformation, emergencyVehicle, sOneFree, sTwoFree, sThreeFree, sFourFree, sFiveFree, sSixFree, sSevenFree, sOneGlobal, sTwoGlobal, sThreeGlobal, sFourGlobal, sFiveGlobal, sSixGlobal, sSevenGlobal}
 
     public enum EmergencyMessage {
         Advice("ADVICE"),
