@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flash Flood Hazard in Mallorca, Spain; Scenario 4</title>
+</head>
+<body>
+    <h1>Flash Flood Hazard in Mallorca, Spain; Scenario 4</h1>
+    <h1>Scenario with Early Warning System and Human Behavior Model</h1>
+
+    <p>In <strong>Scenario 4</strong>, we incorporate both an early warning system and a human behavior model to simulate a more realistic evacuation process. The early warning system sends an evacuation message 30 minutes prior to the expected flash flood, alerting individuals in advance. The human behavior model accounts for varied compliance and responses to the evacuation orders, reflecting real-world scenarios where not all individuals may follow instructions promptly or efficiently.</p>
+
+    <h2>Assumptions</h2>
+    <ul>
+        <li><strong>Infrastructure:</strong>  <span style="color: red;"><strong>Using OSM data to build the traffic network, calibrated by local experts for type and capacities of each link. The early warning system sends an evacuation message 30 minutes (15 minutes) prior to the expected flash flood, allowing individuals to begin evacuation earlier and potentially reducing congestion on the roads. </strong></span></li>
+        <li><strong>Population Demographics:</strong> Basic scenario with all individuals starting evacuation from their homes.</li>
+        <li><strong>Evacuation Policy:</strong> <span style="color: red;"><strong> People who (1) are within the flood risk area and (2) are in a building with only one floor are programmed to promptly head to the nearest safe location upon receiving the evacuation message. This safe location is either determined by local authorities or the nearest building with higher floors. Meanwhile, others seek a safe place within their residence (if inside the risk area) or do nothing (if outside the risk area). </strong></span></li>
+        <li><strong>Hazard Model:</strong> We use the flood progression model to determine the links that get affected. By doing so, if an agent is on a link that gets affected or there is no alternative way to reach a safe place, they get stuck.</li>
+        <li><strong>Human Behavior Model:</strong> <span style="color: red;"><strong>Evacuating populations involves individuals with diverse behaviors and reactions to hazards, influenced by social ties, prior experience, training, risk perception, cultural backgrounds, cognitive biases, and psychological states.  </strong></span></li>
+    </ul>
+
+
+    <h2>Generated Area and Population Data in the ABM Platform</h2>
+    <p>Below, you will find a link to the figure that illustrates the generated network, showcases the population (represented by green dots) and the flood risk areas.</p>
+    <a href="GeneratedNetwork.png" target="_blank">View Generated Network</a>
+
+    <h2>Simulation Showcase</h2>
+    <p>Follow the link below to view the simulation showcase, which provides a dynamic representation of the evacuation process.</p>
+    <a href="SimulationShowcase.mov" target="_blank">View Simulation Showcase</a>
+
+    <h2>Simulation Results</h2>
+    <p><strong>Figure 1:</strong> Population Distribution - This figure highlights the percentage of people within (outside) the flood risk area and the percentage of people living in unsafe residences within the risk area.</p>
+    <a href="Figure_1.png" target="_blank">View Figure 1</a>
+
+    <p><strong>Figure 2:</strong> Kernel Density Estimates (KDE) of Different Events in Scenario 4 (15 min EWS)- This figure illustrates the distribution of events such as 'Go See Flooded Area,' 'Seek Nearby Shelter,' 'Move to Higher Ground or Evacuate Area,' 'Home (Wait, Stay, or Return),' and 'Stuck.' We note a significant 25% reduction in the number of stuck individuals compared to Scenario 3.</p>
+    <a href="Figure_22.png" target="_blank">View Figure 2</a>
+
+    <p><strong>Figure 3:</strong> Kernel Density Estimates (KDE) of Different Events in Scenario 4 (30 min EWS)- This figure illustrates the distribution of events such as 'Go See Flooded Area,' 'Seek Nearby Shelter,' 'Move to Higher Ground or Evacuate Area,' 'Home (Wait, Stay, or Return),' and 'Stuck.' We note a significant 37% reduction in the number of stuck individuals compared to Scenario 3.</p>
+    <a href="Figure_2.png" target="_blank">View Figure 3</a>
+
+
+
+
+</body>
+</html>
