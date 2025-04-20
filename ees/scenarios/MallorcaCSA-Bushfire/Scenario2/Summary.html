@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bushfire Hazard in Mallorca, Spain; Scenario 1</title>
+</head>
+<body>
+    <h1>Bushfire Hazard in Mallorca, Spain; Scenario 2</h1>
+    <h1>Literature-Based Human Behavior Model Scenario</h1>
+
+    <p>In <strong>Scenario 2</strong>, we implement a Human Behavior Model based on findings from the literature. In the absence of pre-warning systems during a bushfire, agents within the fire risk area respond variably. This scenario also considers the temporal dynamics and spatial extent of the fire throughout the observed period, affecting both the road network and evacuation dynamics.</p>
+
+
+    <h2>Assumptions</h2>
+    <ul>
+        <li><strong>Infrastructure:</strong> Using OSM data to build the traffic network, calibrated by local experts for type and capacities of each link.</li>
+        <li><strong>Population Demographics:</strong> Basic scenario with all individuals starting evacuation from their homes.</li>
+        <li><strong>Evacuation Policy:</strong> People who are within the fire risk area are programmed to head to the safe location.</li>
+        <li><strong>Hazard Model:</strong> We use the fire progression model to determine the links that get affected. By doing so, if an agent is on a link that gets affected or there is no alternative way to reach a safe place, they get stuck.</li>
+        <li><strong>Human Behavior Model:</strong> <span style="color: red;"><strong>Evacuating populations involves individuals with diverse behaviors and reactions to hazards, influenced by social ties, prior experience, training, risk perception, cultural backgrounds, cognitive biases, and psychological states.  </strong></span></li>
+    </ul>
+
+    <h2>Generated Area and Population Data in the ABM Platform</h2>
+    <p>Below, you will find a link to the figure that illustrates the generated network, showcases the population (represented by green dots) and the fire risk areas.</p>
+    <a href="GeneratedNetwork.png" target="_blank">View Generated Network</a>
+
+    <h2>Simulation Showcase</h2>
+    <p>Follow the link below to view the simulation showcase, which provides a dynamic representation of the evacuation process.</p>
+    <a href="SimulationShowcase.mov" target="_blank">View Simulation Showcase</a>
+
+    <h2>Simulation Results</h2>
+
+    <p><strong>Figure 1:</strong> Kernel Density Estimates (KDE) of Different Events in Scenario 1.</p>
+    <a href="Figure_1.png" target="_blank">View Figure 1</a>
+
+
+
+
+
+</body>
+</html>
