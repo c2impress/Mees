@@ -41,55 +41,26 @@ unzip ees/target/ees-x.y.z-SNAPSHOT.zip
 
 Then follow the instructions inside the unzipped folder’s README to run specific simulations.
 
-## View Simulation Results
+## View Simulation Scenarios
 
-Simulation outputs are provided as HTML visualizations under the /docs/ directory. These include evacuation maps, route congestion, population flows, and zone capacities for each scenario.
 
 ### Egaleo, Greece – Earthquake
 
 Scenario folders:  
-ees/scenarios/EgaleoCSA-Earthquack/Scenario1  
-ees/scenarios/EgaleoCSA-Earthquack/Scenario2  
-ees/scenarios/EgaleoCSA-Earthquack/Scenario3  
-ees/scenarios/EgaleoCSA-Earthquack/Scenario4  
+ees/scenarios/EgaleoCSA-Earthquack
 
-HTML results:  
-docs/egaleo/scenario1.html  
-docs/egaleo/scenario2.html  
-docs/egaleo/scenario3.html  
-docs/egaleo/scenario4.html
 
 ### Mallorca, Spain – Wildfire (Bushfire)
 
 Scenario folders:  
-ees/scenarios/MallorcaCSA-Bushfire/Scenario1  
-ees/scenarios/MallorcaCSA-Bushfire/Scenario2  
+ees/scenarios/MallorcaCSA-Bushfire
 
-HTML results:  
-docs/mallorca_bushfire/scenario1.html  
-docs/mallorca_bushfire/scenario2.html
 
 ### Mallorca, Spain – Flash Flood
 
 Scenario folders:  
-ees/scenarios/MallorcaCSA-FlashFlood/Scenario1  
-ees/scenarios/MallorcaCSA-FlashFlood/Scenario2  
-ees/scenarios/MallorcaCSA-FlashFlood/Scenario3  
-ees/scenarios/MallorcaCSA-FlashFlood/Scenario4  
+ees/scenarios/MallorcaCSA-FlashFlood
 
-HTML results:  
-docs/mallorca_flood/scenario1.html  
-docs/mallorca_flood/scenario2.html  
-docs/mallorca_flood/scenario3.html  
-docs/mallorca_flood/scenario4.html
-
-## Acknowledgments
-
-Developed as part of the C2IMPRESS project by RMIT Europe, RMIT University, Université Grenoble Alpes, METEO France, TVS, and local municipalities. Simulations are based on and extend the open-source EES platform.
-
-## License
-
-This project is released under the MIT License.
 
 ## Contact
 
