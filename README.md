@@ -1,6 +1,6 @@
 # C2IMPRESS: CO-CREATIVE IMPROVED UNDERSTANDING AND AWARENESS OF MULTI-HAZARD RISKS FOR DISASTER RESILIENT SOCIETY
 
-C2IMPRESS is a European project that supports communities in responding to multiple hazards—such as floods, wildfires, and earthquakes—through integrated, people- and place-centered frameworks. This repository contains the Agent-Based Modeling (ABM) and Human Behavior Modeling (HBM) simulations used to study evacuation dynamics and risk awareness in multiple case study areas (CSAs) under real and hypothetical disaster scenarios.
+C2IMPRESS is a European project that supports communities in responding to multiple hazards, such as floods, wildfires, and earthquakes, through integrated, people- and place-centered frameworks. This repository contains the Agent-Based Modeling (ABM) and Human Behavior Modeling (HBM) simulations used to study evacuation dynamics and risk awareness in multiple case study areas (CSAs) under real and hypothetical disaster scenarios.
 
 ## How to Run the Simulations
 
