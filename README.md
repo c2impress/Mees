@@ -9,7 +9,7 @@ This simulation system builds upon the Evacuation Experimentation System (EES): 
 ### Dependencies
 
 This program depends on the following projects:
-- EES – Evacuation Experimentation System
+- MEES – MultiModal Evacuation Experimentation System
 - BDI-ABM Integration
 - Social Network Diffusion Model
 
