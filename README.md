@@ -24,11 +24,15 @@ Clone the repository and initialize submodules:
 
 If already cloned:
 
+```
 git submodule update --init --recursive
+```
 
 ### How to Build
 
+```
 ./mvnw package
+```
 
 This will produce the EES release archive at:  
 ees/target/ees-x.y.z-SNAPSHOT.zip
@@ -47,19 +51,24 @@ Then follow the instructions inside the unzipped folder’s README to run specif
 ### Egaleo, Greece – Earthquake
 
 Scenario folders:  
+```
 ees/scenarios/EgaleoCSA-Earthquack
-
+```
 
 ### Mallorca, Spain – Wildfire (Bushfire)
 
 Scenario folders:  
+```
 ees/scenarios/MallorcaCSA-Bushfire
+```
 
 
 ### Mallorca, Spain – Flash Flood
 
 Scenario folders:  
+```
 ees/scenarios/MallorcaCSA-FlashFlood
+```
 
 
 ## Contact
