@@ -509,7 +509,7 @@ public final class MATSimEvacModel implements ABMServerInterface, QueryPerceptIn
                     this.bind(LeastCostPathCalculatorFactory.class).to(ExampleRoutingAlgorithmFactory.class);
                 }
             }
-            public class CustomTransportMode {
+            class CustomTransportMode {
                 public static final String sOne = "sOne";
                 public static final String sTwo = "sTwo";
                 public static final String sThree = "sThree";
